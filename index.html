@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ROBLOX MEMORY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --roblox-red: #D01012;
+            --neon-purple: #BF00FF;
+            --neon-purple-dark: #8000AA;
+            --card-back: #D01012;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Hanken Grotesk', sans-serif;
+            background-color: #050505;
+            color: #FFFFFF;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        #star-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #main-menu {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            animation: fadeIn 0.5s ease;
+            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .main-banner {
+            width: 100%;
+            max-width: 700px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(191, 0, 255, 0.5);
+            border: 3px solid var(--neon-purple);
+            margin-bottom: 10px;
+        }
+
+        .main-banner img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .roblox-logo-text {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .tilted-o {
+            display: inline-block;
+            transform: rotate(-15deg);
+            border: 3px solid white;
+            width: 0.8em;
+            height: 0.8em;
+            margin: 0 2px;
+            position: relative;
+        }
+
+        .levels-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .level-btn {
+            background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-purple-dark) 100%);
+            border: 2px solid var(--neon-purple);
+            color: white;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 140px;
+            box-shadow: 0 0 15px rgba(191, 0, 255, 0.6), 0 3px 0 var(--neon-purple-dark);
+            font-family: 'Hanken Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .level-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 0 15px rgba(191, 0, 255, 0.6), 0 0 0 var(--neon-purple-dark);
+        }
+
+        .level-btn:hover {
+            box-shadow: 0 0 25px rgba(191, 0, 255, 0.9), 0 3px 0 var(--neon-purple-dark);
+            filter: brightness(1.2);
+        }
+
+        #game-board {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+        }
+
+        .game-header {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            border: 2px solid var(--neon-purple);
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-purple-dark) 100%);
+            border: 2px solid var(--neon-purple);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(191, 0, 255, 0.6), 0 3px 0 var(--neon-purple-dark);
+            transition: all 0.2s;
+        }
+        
+        .home-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            stroke-width: 2.5;
+        }
+
+        .home-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 0 15px rgba(191, 0, 255, 0.6), 0 0 0 var(--neon-purple-dark);
+        }
+
+        .home-btn:hover {
+            box-shadow: 0 0 25px rgba(191, 0, 255, 0.9), 0 3px 0 var(--neon-purple-dark);
+            filter: brightness(1.2);
+        }
+
+        .score-board {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--neon-purple);
+            text-shadow: 0 0 10px rgba(191, 0, 255, 0.5);
+        }
+
+        .grid {
+            display: grid;
+            gap: 12px;
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .card {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card.matched .card-inner {
+            transform: rotateY(180deg);
+            box-shadow: 0 0 25px var(--neon-purple);
+            border: 2px solid var(--neon-purple);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            top: 0;
+            left: 0;
+        }
+
+        /* РУБАШКА = ТОЛЬКО ЛОГОТИП, БЕЗ ПОДЛОЖКИ */
+        .card-back {
+            background: transparent !important;
+            width: 100% !important;
+            height: 100% !important;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card-back img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            opacity: 1 !important;
+            pointer-events: none;
+            border-radius: 12px;
+        }
+
+        .card-front {
+            background-color: white;
+            transform: rotateY(180deg);
+            width: 100%;
+            height: 100%;
+            padding: 6px;
+        }
+
+        .card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .free-space {
+            background: rgba(191, 0, 255, 0.15);
+            border: 2px dashed var(--neon-purple);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(191, 0, 255, 0.3);
+            aspect-ratio: 1 / 1;
+        }
+
+        .free-space img {
+            width: 70%;
+            height: 70%;
+            object-fit: contain;
+        }
+
+        #video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000000;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #video-modal video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        #video-continue-btn {
+            position: absolute;
+            bottom: 40px;
+            background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-purple-dark) 100%);
+            border: 2px solid var(--neon-purple);
+            color: white;
+            padding: 15px 50px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(191, 0, 255, 0.8);
+            font-family: 'Hanken Grotesk', sans-serif;
+            z-index: 10000;
+            transition: all 0.2s;
+        }
+
+        #video-continue-btn:hover {
+            filter: brightness(1.3);
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .roblox-logo-text { font-size: 2.5rem; }
+            .level-btn { min-width: 120px; font-size: 0.9rem; padding: 10px 15px; }
+            .grid { gap: 8px; max-width: 95vw; }
+            .main-banner { max-width: 95%; }
+            #video-continue-btn { bottom: 20px; padding: 12px 40px; font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="star-canvas"></canvas>
+
+    <div class="container">
+        <div id="main-menu">
+            <div class="main-banner">
+                <img src="banner_main.png" alt="ROBLOX MEMORY Banner">
+            </div>
+            
+            <div class="logo-container">
+                <div class="roblox-logo-text">
+                    R<span class="tilted-o"></span>B L<span class="tilted-o"></span>X
+                </div>
+                <h1 style="margin-top: -10px; font-weight: 700; letter-spacing: 5px;">MEMORY</h1>
+            </div>
+
+            <div class="levels-container">
+                <button class="level-btn" onclick="startGame(1)">Уровень 1<br>3×3</button>
+                <button class="level-btn" onclick="startGame(2)">Уровень 2<br>3×4</button>
+                <button class="level-btn" onclick="startGame(3)">Уровень 3<br>4×4</button>
+            </div>
+        </div>
+
+        <div id="game-board">
+            <div class="game-header">
+                <button class="home-btn" onclick="goHome()" aria-label="На главную">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                </button>
+                <div class="score-board">Пары: <span id="pairs-count">0</span>/<span id="total-pairs">0</span></div>
+            </div>
+            <div class="grid" id="grid"></div>
+        </div>
+    </div>
+
+    <div id="video-modal">
+        <video id="completion-video" preload="auto" playsinline controls>
+            <source src="" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+        </video>
+        <button id="video-continue-btn" onclick="closeVideo()">Продолжить</button>
+    </div>
+
+    <script>
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playSound(type) {
+            if (!audioCtx) initAudio();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'flip') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'match') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+                
+                setTimeout(() => {
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+                    osc2.type = 'triangle';
+                    osc2.frequency.setValueAtTime(659.25, audioCtx.currentTime);
+                    gain2.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain2.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+                    osc2.start();
+                    osc2.stop(audioCtx.currentTime + 0.3);
+                }, 100);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.2);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.2);
+            }
+        }
+
+        const cardImages = {
+            1: ['card_1.png', 'card_1.png', 'card_2.png', 'card_2.png', 'card_3.png', 'card_3.png', 'card_4.png', 'card_4.png'],
+            2: ['card_1.png', 'card_1.png', 'card_2.png', 'card_2.png', 'card_3.png', 'card_3.png', 'card_4.png', 'card_4.png', 'card_5.png', 'card_5.png', 'card_6.png', 'card_6.png'],
+            3: ['card_1.png', 'card_1.png', 'card_2.png', 'card_2.png', 'card_3.png', 'card_3.png', 'card_4.png', 'card_4.png', 'card_5.png', 'card_5.png', 'card_6.png', 'card_6.png', 'card_7.png', 'card_7.png', 'card_8.png', 'card_8.png']
+        };
+
+        const completionVideo = 'video_complete.mp4';
+
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let totalPairs = 0;
+        let isLocked = false;
+        let currentLevelConfig = {};
+        let currentLevel = 1;
+
+        const gridElement = document.getElementById('grid');
+        const pairsCountEl = document.getElementById('pairs-count');
+        const totalPairsEl = document.getElementById('total-pairs');
+        const mainMenu = document.getElementById('main-menu');
+        const gameBoard = document.getElementById('game-board');
+        const videoModal = document.getElementById('video-modal');
+        const completionVideoEl = document.getElementById('completion-video');
+
+        function startGame(level) {
+            initAudio();
+            currentLevel = level;
+            mainMenu.style.display = 'none';
+            gameBoard.style.display = 'flex';
+            
+            if (level === 1) currentLevelConfig = { rows: 3, cols: 3, pairs: 4 };
+            else if (level === 2) currentLevelConfig = { rows: 3, cols: 4, pairs: 6 };
+            else currentLevelConfig = { rows: 4, cols: 4, pairs: 8 };
+
+            totalPairs = currentLevelConfig.pairs;
+            matchedPairs = 0;
+            flippedCards = [];
+            isLocked = false;
+            
+            pairsCountEl.innerText = '0';
+            totalPairsEl.innerText = totalPairs;
+            generateGrid();
+        }
+
+        function goHome() {
+            gameBoard.style.display = 'none';
+            mainMenu.style.display = 'flex';
+            gridElement.innerHTML = '';
+        }
+
+        function generateGrid() {
+            gridElement.innerHTML = '';
+            gridElement.style.gridTemplateColumns = `repeat(${currentLevelConfig.cols}, 1fr)`;
+            
+            const levelImages = cardImages[currentLevel];
+            let deck = [...levelImages];
+            deck.sort(() => 0.5 - Math.random());
+
+            const totalSlots = currentLevelConfig.rows * currentLevelConfig.cols;
+            const is3x3 = (currentLevelConfig.rows === 3 && currentLevelConfig.cols === 3);
+
+            for (let i = 0; i < totalSlots; i++) {
+                if (is3x3 && i === 4) {
+                    const freeSpace = document.createElement('div');
+                    freeSpace.className = 'free-space';
+                    freeSpace.innerHTML = '<img src="card_house_special.png" alt="House">';
+                    gridElement.appendChild(freeSpace);
+                    continue;
+                }
+
+                const cardValue = deck.pop();
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.value = cardValue;
+
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front"><img src="${cardValue}" alt="Card"></div>
+                        <div class="card-back"><img src="roblox-logo-small.png" onerror="this.style.display='none'" alt="Back"></div>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => flipCard(card));
+                gridElement.appendChild(card);
+            }
+        }
+
+        function flipCard(card) {
+            if (isLocked) return;
+            if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+            initAudio();
+            playSound('flip');
+            card.classList.add('flipped');
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) checkMatch();
+        }
+
+        function checkMatch() {
+            isLocked = true;
+            const [card1, card2] = flippedCards;
+            const match = card1.dataset.value === card2.dataset.value;
+
+            if (match) {
+                playSound('match');
+                setTimeout(() => {
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    flippedCards = [];
+                    matchedPairs++;
+                    pairsCountEl.innerText = matchedPairs;
+                    isLocked = false;
+
+                    if (matchedPairs === totalPairs) {
+                        setTimeout(showCompletionVideo, 500);
+                    }
+                }, 500);
+            } else {
+                playSound('error');
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                    flippedCards = [];
+                    isLocked = false;
+                }, 1000);
+            }
+        }
+
+        function showCompletionVideo() {
+            console.log('=== ЗАПУСК ВИДЕО ===');
+            console.log('Путь к видео:', completionVideo);
+            
+            fetch(completionVideo)
+                .then(response => {
+                    console.log('Статус ответа:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`Файл не найден (статус ${response.status})`);
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    console.log('Размер видео:', blob.size, 'байт');
+                    const videoURL = URL.createObjectURL(blob);
+                    completionVideoEl.src = videoURL;
+                    completionVideoEl.load();
+                    videoModal.style.display = 'flex';
+                    
+                    completionVideoEl.play().then(() => {
+                        console.log('✅ Видео запущено успешно');
+                    }).catch(err => {
+                        console.error('❌ Ошибка воспроизведения:', err);
+                        alert('Не удалось автоматически воспроизвести видео. Нажмите Play на плеере.');
+                    });
+                })
+                .catch(err => {
+                    console.error('❌ Ошибка загрузки видео:', err);
+                    alert(`Ошибка: видео не найдено!\n\nПроверьте:\n1. Файл называется "video_complete.mp4" (не "video_complete.mp4.mp4")\n2. Файл загружен в репозиторий\n3. Размер файла меньше 25 MB`);
+                });
+        }
+
+        function closeVideo() {
+            completionVideoEl.pause();
+            completionVideoEl.currentTime = 0;
+            videoModal.style.display = 'none';
+            goHome();
+        }
+
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let stars = [];
+        let mouse = { x: -1000, y: -1000 };
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Star {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2;
+                this.baseOpacity = Math.random() * 0.5 + 0.1;
+                this.opacity = this.baseOpacity;
+                this.twinkleSpeed = Math.random() * 0.02 + 0.005;
+                this.angle = Math.random() * Math.PI * 2;
+            }
+            update() {
+                this.angle += this.twinkleSpeed;
+                this.opacity = this.baseOpacity + Math.sin(this.angle) * 0.2;
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 150) {
+                    const force = (150 - distance) / 150;
+                    this.opacity += force * 0.5;
+                    this.x -= (dx / distance) * force * 0.5;
+                    this.y -= (dy / distance) * force * 0.5;
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initStars() {
+            resize();
+            for (let i = 0; i < 150; i++) stars.push(new Star());
+            animateStars();
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, width, height);
+            stars.forEach(star => { star.update(); star.draw(); });
+            requestAnimationFrame(animateStars);
+        }
+
+        window.addEventListener('resize', resize);
+        window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('touchmove', (e) => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
+
+        initStars();
+    </script>
+</body>
+</html>

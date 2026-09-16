@@ -250,22 +250,25 @@
             left: 0;
         }
 
+        /* РУБАШКА = ТОЛЬКО ЛОГОТИП, БЕЗ ПОДЛОЖКИ */
         .card-back {
-            background-color: var(--card-back);
-            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.15) 10px, rgba(0,0,0,0.15) 20px);
+            background: transparent !important;
             width: 100% !important;
             height: 100% !important;
             position: absolute;
             top: 0;
             left: 0;
+            padding: 0;
+            margin: 0;
         }
-        
+
         .card-back img {
-            width: 65% !important;
-            height: 65% !important;
-            object-fit: contain;
-            opacity: 0.85;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            opacity: 1 !important;
             pointer-events: none;
+            border-radius: 12px;
         }
 
         .card-front {
@@ -395,8 +398,9 @@
     </div>
 
     <div id="video-modal">
-        <video id="completion-video" preload="auto" playsinline>
+        <video id="completion-video" preload="auto" playsinline controls>
             <source src="" type="video/mp4">
+            Ваш браузер не поддерживает видео.
         </video>
         <button id="video-continue-btn" onclick="closeVideo()">Продолжить</button>
     </div>
@@ -516,28 +520,24 @@
             const totalSlots = currentLevelConfig.rows * currentLevelConfig.cols;
             const is3x3 = (currentLevelConfig.rows === 3 && currentLevelConfig.cols === 3);
 
-            console.log('Уровень:', currentLevel, 'Всего слотов:', totalSlots, 'Карточек в deck:', deck.length);
-
             for (let i = 0; i < totalSlots; i++) {
                 if (is3x3 && i === 4) {
                     const freeSpace = document.createElement('div');
                     freeSpace.className = 'free-space';
-                    freeSpace.innerHTML = '<img src="card_house_special.png" alt="House" onerror="console.error(\'Не загружено: card_house_special.png\')">';
+                    freeSpace.innerHTML = '<img src="card_house_special.png" alt="House">';
                     gridElement.appendChild(freeSpace);
                     continue;
                 }
 
                 const cardValue = deck.pop();
-                console.log('Создаю карточку:', cardValue, 'для позиции:', i);
-                
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.dataset.value = cardValue;
 
                 card.innerHTML = `
                     <div class="card-inner">
-                        <div class="card-front"><img src="${cardValue}" alt="Card" onerror="console.error('Не загружено изображение:', '${cardValue}')"></div>
-                        <div class="card-back"><img src="roblox-logo-small.png" onerror="console.error('Не загружено: roblox-logo-small.png'); this.style.display='none'" alt="Back"></div>
+                        <div class="card-front"><img src="${cardValue}" alt="Card"></div>
+                        <div class="card-back"><img src="roblox-logo-small.png" onerror="this.style.display='none'" alt="Back"></div>
                     </div>
                 `;
 
@@ -554,8 +554,6 @@
             playSound('flip');
             card.classList.add('flipped');
             flippedCards.push(card);
-            
-            console.log('Перевернута карточка:', card.dataset.value, 'Всего перевернуто:', flippedCards.length);
 
             if (flippedCards.length === 2) checkMatch();
         }
@@ -564,8 +562,6 @@
             isLocked = true;
             const [card1, card2] = flippedCards;
             const match = card1.dataset.value === card2.dataset.value;
-            
-            console.log('Проверка совпадения:', card1.dataset.value, '===', card2.dataset.value, 'Результат:', match);
 
             if (match) {
                 playSound('match');
@@ -576,11 +572,8 @@
                     matchedPairs++;
                     pairsCountEl.innerText = matchedPairs;
                     isLocked = false;
-                    
-                    console.log('Найдено пар:', matchedPairs, 'из', totalPairs);
 
                     if (matchedPairs === totalPairs) {
-                        console.log('Все пары найдены! Запускаю видео...');
                         setTimeout(showCompletionVideo, 500);
                     }
                 }, 500);
@@ -596,32 +589,40 @@
         }
 
         function showCompletionVideo() {
-            console.log('Загрузка видео:', completionVideo);
-            completionVideoEl.src = completionVideo;
-            completionVideoEl.load(); // ВАЖНО: загружаем видео перед воспроизведением
-            videoModal.style.display = 'flex';
+            console.log('=== ЗАПУСК ВИДЕО ===');
+            console.log('Путь к видео:', completionVideo);
             
-            completionVideoEl.play().then(() => {
-                console.log('Видео успешно запущено');
-            }).catch(e => {
-                console.error('Ошибка автозапуска видео:', e);
-                completionVideoEl.controls = true; // Показываем элементы управления
-            });
-            
-            // Обработчики событий видео
-            completionVideoEl.oncanplay = () => {
-                console.log('Видео готово к воспроизведению');
-            };
-            
-            completionVideoEl.onerror = (e) => {
-                console.error('Ошибка загрузки видео:', e);
-            };
+            fetch(completionVideo)
+                .then(response => {
+                    console.log('Статус ответа:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`Файл не найден (статус ${response.status})`);
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    console.log('Размер видео:', blob.size, 'байт');
+                    const videoURL = URL.createObjectURL(blob);
+                    completionVideoEl.src = videoURL;
+                    completionVideoEl.load();
+                    videoModal.style.display = 'flex';
+                    
+                    completionVideoEl.play().then(() => {
+                        console.log('✅ Видео запущено успешно');
+                    }).catch(err => {
+                        console.error('❌ Ошибка воспроизведения:', err);
+                        alert('Не удалось автоматически воспроизвести видео. Нажмите Play на плеере.');
+                    });
+                })
+                .catch(err => {
+                    console.error('❌ Ошибка загрузки видео:', err);
+                    alert(`Ошибка: видео не найдено!\n\nПроверьте:\n1. Файл называется "video_complete.mp4" (не "video_complete.mp4.mp4")\n2. Файл загружен в репозиторий\n3. Размер файла меньше 25 MB`);
+                });
         }
 
         function closeVideo() {
             completionVideoEl.pause();
             completionVideoEl.currentTime = 0;
-            completionVideoEl.controls = false;
             videoModal.style.display = 'none';
             goHome();
         }

@@ -8,12 +8,8 @@
     <style>
         :root {
             --roblox-red: #D01012;
-            --roblox-blue: #00A2FF;
             --neon-purple: #BF00FF;
             --neon-purple-dark: #8000AA;
-            --roblox-dark: #191919;
-            --roblox-gray: #393B3D;
-            --text-color: #FFFFFF;
             --card-back: #D01012;
         }
 
@@ -28,7 +24,7 @@
             padding: 0;
             font-family: 'Hanken Grotesk', sans-serif;
             background-color: #050505;
-            color: var(--text-color);
+            color: #FFFFFF;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
@@ -86,11 +82,6 @@
             display: block;
         }
 
-        .logo-container {
-            margin: 10px 0;
-        }
-
-        /* CSS Imitation of Roblox Logo */
         .roblox-logo-text {
             font-size: 3rem;
             font-weight: 900;
@@ -164,13 +155,14 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             padding: 10px 20px;
             border-radius: 15px;
             backdrop-filter: blur(5px);
             border: 2px solid var(--neon-purple);
         }
 
+        /* НЕОНОВО-ФИОЛЕТОВАЯ КНОПКА ДОМОЙ С ИКОНКОЙ */
         .home-btn {
             background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-purple-dark) 100%);
             border: 2px solid var(--neon-purple);
@@ -182,11 +174,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
             box-shadow: 0 0 15px rgba(191, 0, 255, 0.6), 0 3px 0 var(--neon-purple-dark);
             transition: all 0.2s;
         }
         
+        .home-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            stroke-width: 2.5;
+        }
+
         .home-btn:active {
             transform: translateY(3px);
             box-shadow: 0 0 15px rgba(191, 0, 255, 0.6), 0 0 0 var(--neon-purple-dark);
@@ -207,21 +205,20 @@
         /* Grid */
         .grid {
             display: grid;
-            gap: 10px;
+            gap: 12px;
             width: 100%;
             max-width: 500px;
-            aspect-ratio: 1;
             margin: auto;
         }
 
-        /* Card Styles */
+        /* Card Styles - СТРОГО 1:1 */
         .card {
             background-color: transparent;
             perspective: 1000px;
             cursor: pointer;
             position: relative;
             width: 100%;
-            height: 100%;
+            aspect-ratio: 1 / 1; /* ГАРАНТИРУЕТ КВАДРАТ */
         }
 
         .card-inner {
@@ -231,8 +228,8 @@
             text-align: center;
             transition: transform 0.6s;
             transform-style: preserve-3d;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
 
         .card.flipped .card-inner {
@@ -241,7 +238,7 @@
 
         .card.matched .card-inner {
             transform: rotateY(180deg);
-            box-shadow: 0 0 20px var(--neon-purple);
+            box-shadow: 0 0 25px var(--neon-purple);
             border: 2px solid var(--neon-purple);
         }
 
@@ -251,107 +248,118 @@
             height: 100%;
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            border: 2px solid rgba(255,255,255,0.1);
+            top: 0;
+            left: 0;
         }
 
+        /* РУБАШКА ПОЛНОСТЬЮ ПОКРЫВАЕТ КАРТОЧКУ */
         .card-back {
             background-color: var(--card-back);
-            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px);
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.15) 10px, rgba(0,0,0,0.15) 20px);
+            width: 100%;
+            height: 100%;
         }
         
         .card-back img {
-            width: 60%;
-            height: 60%;
+            width: 65%;
+            height: 65%;
             object-fit: contain;
-            opacity: 0.7;
+            opacity: 0.8;
+            pointer-events: none;
         }
 
         .card-front {
             background-color: white;
             transform: rotateY(180deg);
-            padding: 5px;
+            width: 100%;
+            height: 100%;
+            padding: 8px;
         }
 
         .card-front img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: cover; /* Заполняет весь квадрат */
             border-radius: 8px;
         }
 
         /* Free Space for 3x3 level */
         .free-space {
-            background: rgba(191, 0, 255, 0.2);
+            background: rgba(191, 0, 255, 0.15);
             border: 2px dashed var(--neon-purple);
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             box-shadow: 0 0 15px rgba(191, 0, 255, 0.3);
+            aspect-ratio: 1 / 1;
         }
 
         .free-space img {
-            width: 80%;
-            height: 80%;
+            width: 70%;
+            height: 70%;
             object-fit: contain;
         }
 
-        /* Video Modal */
+        /* VIDEO MODAL - НА ВЕСЬ ЭКРАН */
         #video-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 100;
+            width: 100vw;
+            height: 100vh;
+            background: #000000;
+            z-index: 9999;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
         }
 
         #video-modal video {
-            max-width: 90%;
-            max-height: 70vh;
-            border-radius: 15px;
-            box-shadow: 0 0 40px rgba(191, 0, 255, 0.8);
-            border: 3px solid var(--neon-purple);
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Видео масштабируется, сохраняя пропорции, но занимает максимум экрана */
         }
 
         #video-continue-btn {
-            margin-top: 20px;
+            position: absolute;
+            bottom: 40px;
             background: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-purple-dark) 100%);
             border: 2px solid var(--neon-purple);
             color: white;
-            padding: 15px 40px;
-            font-size: 1.2rem;
+            padding: 15px 50px;
+            font-size: 1.3rem;
             font-weight: 700;
             border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(191, 0, 255, 0.6);
+            box-shadow: 0 0 30px rgba(191, 0, 255, 0.8);
             font-family: 'Hanken Grotesk', sans-serif;
+            z-index: 10000;
+            transition: all 0.2s;
         }
 
-        /* Animations */
+        #video-continue-btn:hover {
+            filter: brightness(1.3);
+            transform: scale(1.05);
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Responsive */
         @media (max-width: 600px) {
             .roblox-logo-text { font-size: 2.5rem; }
-            .level-btn { min-width: 120px; font-size: 0.9rem; padding: 10px 20px; }
-            .card-front { font-size: 2rem; }
-            .grid { gap: 8px; }
+            .level-btn { min-width: 120px; font-size: 0.9rem; padding: 10px 15px; }
+            .grid { gap: 8px; max-width: 95vw; }
             .main-banner { max-width: 95%; }
+            #video-continue-btn { bottom: 20px; padding: 12px 40px; font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -383,7 +391,13 @@
         <!-- GAME BOARD -->
         <div id="game-board">
             <div class="game-header">
-                <button class="home-btn" onclick="goHome()"></button>
+                <!-- Кнопка с SVG иконкой домика -->
+                <button class="home-btn" onclick="goHome()" aria-label="На главную">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                </button>
                 <div class="score-board">Пары: <span id="pairs-count">0</span>/<span id="total-pairs">0</span></div>
             </div>
             <div class="grid" id="grid">
@@ -392,30 +406,28 @@
         </div>
     </div>
 
-    <!-- VIDEO MODAL -->
+    <!-- FULL SCREEN VIDEO MODAL -->
     <div id="video-modal">
-        <video id="completion-video" controls>
+        <video id="completion-video" playsinline>
             <source src="" type="video/mp4">
         </video>
         <button id="video-continue-btn" onclick="closeVideo()">Продолжить</button>
     </div>
 
     <script>
-        // --- AUDIO SYSTEM (Web Audio API) ---
+        // --- AUDIO SYSTEM ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
 
         function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new AudioContext();
-            }
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
         function playSound(type) {
             if (!audioCtx) initAudio();
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-
             osc.connect(gainNode);
             gainNode.connect(audioCtx.destination);
 
@@ -459,46 +471,10 @@
         }
 
         // --- GAME LOGIC ---
-        // 8 КАРТОЧЕК, КОТОРЫЕ ИСПОЛЬЗУЮТСЯ ВО ВСЕХ УРОВНЯХ
-        const allCards = [
-            'card_1.png',
-            'card_2.png',
-            'card_3.png',
-            'card_4.png',
-            'card_5.png',
-            'card_6.png',
-            'card_7.png',
-            'card_8.png'
-        ];
-
-        // УРОВЕНЬ 1: 4 пары (card_1 - card_4)
-        // УРОВЕНЬ 2: 6 пар (card_1 - card_6)
-        // УРОВЕНЬ 3: 8 пар (card_1 - card_8)
         const cardImages = {
-            1: [
-                'card_1.png', 'card_1.png',
-                'card_2.png', 'card_2.png',
-                'card_3.png', 'card_3.png',
-                'card_4.png', 'card_4.png'
-            ],
-            2: [
-                'card_1.png', 'card_1.png',
-                'card_2.png', 'card_2.png',
-                'card_3.png', 'card_3.png',
-                'card_4.png', 'card_4.png',
-                'card_5.png', 'card_5.png',
-                'card_6.png', 'card_6.png'
-            ],
-            3: [
-                'card_1.png', 'card_1.png',
-                'card_2.png', 'card_2.png',
-                'card_3.png', 'card_3.png',
-                'card_4.png', 'card_4.png',
-                'card_5.png', 'card_5.png',
-                'card_6.png', 'card_6.png',
-                'card_7.png', 'card_7.png',
-                'card_8.png', 'card_8.png'
-            ]
+            1: ['card_1.png', 'card_1.png', 'card_2.png', 'card_2.png', 'card_3.png', 'card_3.png', 'card_4.png', 'card_4.png'],
+            2: ['card_1.png', 'card_1.png', 'card_2.png', 'card_2.png', 'card_3.png', 'card_3.png', 'card_4.png', 'card_4.png', 'card_5.png', 'card_5.png', 'card_6.png', 'card_6.png'],
+            3: ['card_1.png', 'card_1.png', 'card_2.png', 'card_2.png', 'card_3.png', 'card_3.png', 'card_4.png', 'card_4.png', 'card_5.png', 'card_5.png', 'card_6.png', 'card_6.png', 'card_7.png', 'card_7.png', 'card_8.png', 'card_8.png']
         };
 
         const completionVideo = 'video_complete.mp4';
@@ -524,13 +500,9 @@
             mainMenu.style.display = 'none';
             gameBoard.style.display = 'flex';
             
-            if (level === 1) {
-                currentLevelConfig = { rows: 3, cols: 3, pairs: 4 };
-            } else if (level === 2) {
-                currentLevelConfig = { rows: 3, cols: 4, pairs: 6 };
-            } else {
-                currentLevelConfig = { rows: 4, cols: 4, pairs: 8 };
-            }
+            if (level === 1) currentLevelConfig = { rows: 3, cols: 3, pairs: 4 };
+            else if (level === 2) currentLevelConfig = { rows: 3, cols: 4, pairs: 6 };
+            else currentLevelConfig = { rows: 4, cols: 4, pairs: 8 };
 
             totalPairs = currentLevelConfig.pairs;
             matchedPairs = 0;
@@ -539,7 +511,6 @@
             
             pairsCountEl.innerText = '0';
             totalPairsEl.innerText = totalPairs;
-
             generateGrid();
         }
 
@@ -552,8 +523,7 @@
         function generateGrid() {
             gridElement.innerHTML = '';
             gridElement.style.gridTemplateColumns = `repeat(${currentLevelConfig.cols}, 1fr)`;
-            gridElement.style.gridTemplateRows = `repeat(${currentLevelConfig.rows}, 1fr)`;
-
+            
             const levelImages = cardImages[currentLevel];
             let deck = [...levelImages];
             deck.sort(() => 0.5 - Math.random());
@@ -596,9 +566,7 @@
             card.classList.add('flipped');
             flippedCards.push(card);
 
-            if (flippedCards.length === 2) {
-                checkMatch();
-            }
+            if (flippedCards.length === 2) checkMatch();
         }
 
         function checkMatch() {
@@ -617,9 +585,7 @@
                     isLocked = false;
 
                     if (matchedPairs === totalPairs) {
-                        setTimeout(() => {
-                            showCompletionVideo();
-                        }, 500);
+                        setTimeout(showCompletionVideo, 500);
                     }
                 }, 500);
             } else {
@@ -636,11 +602,13 @@
         function showCompletionVideo() {
             completionVideoEl.src = completionVideo;
             videoModal.style.display = 'flex';
-            completionVideoEl.play();
+            // Запуск видео. Браузеры разрешают autoplay после взаимодействия пользователя с игрой
+            completionVideoEl.play().catch(e => console.log("Autoplay prevented:", e));
         }
 
         function closeVideo() {
             completionVideoEl.pause();
+            completionVideoEl.currentTime = 0;
             videoModal.style.display = 'none';
             goHome();
         }
@@ -658,10 +626,7 @@
         }
 
         class Star {
-            constructor() {
-                this.reset();
-            }
-
+            constructor() { this.reset(); }
             reset() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
@@ -671,24 +636,19 @@
                 this.twinkleSpeed = Math.random() * 0.02 + 0.005;
                 this.angle = Math.random() * Math.PI * 2;
             }
-
             update() {
                 this.angle += this.twinkleSpeed;
                 this.opacity = this.baseOpacity + Math.sin(this.angle) * 0.2;
-
                 const dx = mouse.x - this.x;
                 const dy = mouse.y - this.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                const maxDist = 150;
-
-                if (distance < maxDist) {
-                    const force = (maxDist - distance) / maxDist;
+                if (distance < 150) {
+                    const force = (150 - distance) / 150;
                     this.opacity += force * 0.5;
                     this.x -= (dx / distance) * force * 0.5;
                     this.y -= (dy / distance) * force * 0.5;
                 }
             }
-
             draw() {
                 ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
                 ctx.beginPath();
@@ -699,31 +659,19 @@
 
         function initStars() {
             resize();
-            for (let i = 0; i < 150; i++) {
-                stars.push(new Star());
-            }
+            for (let i = 0; i < 150; i++) stars.push(new Star());
             animateStars();
         }
 
         function animateStars() {
             ctx.clearRect(0, 0, width, height);
-            stars.forEach(star => {
-                star.update();
-                star.draw();
-            });
+            stars.forEach(star => { star.update(); star.draw(); });
             requestAnimationFrame(animateStars);
         }
 
         window.addEventListener('resize', resize);
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        });
-        
-        window.addEventListener('touchmove', (e) => {
-            mouse.x = e.touches[0].clientX;
-            mouse.y = e.touches[0].clientY;
-        });
+        window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('touchmove', (e) => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
 
         initStars();
     </script>
